@@ -1,0 +1,127 @@
+﻿@model int
+@{
+	ViewData["Title"] = "About";
+	var currentPosition = Model;
+
+	var imgPositions = Enumerable.Range(currentPosition - 5, 10);
+}
+<div>
+	<a href="~/Slideshow/Next?position=@(Model-1)">Previous</a>
+	<a href="~/Slideshow/Next?position=@(Model+1)">Next</a>
+</div>
+<div id="imageContent" class="container">
+	<div class="row vertical-align">
+		<div class="col-xs-12">
+			@foreach (var position in imgPositions)
+			{
+				var isCurrent = position == currentPosition ? "current" : "hidden";
+				<img src="~/Slideshow/Image?position=@position" class="img-responsive @isCurrent" data-position="@position" />
+			}
+		</div>
+	</div>
+</div>
+
+@section Scripts{
+	<script type="text/javascript">
+		console.debug(0);
+		$(function () {
+			console.debug(1);
+			var LEFT = 37;
+			var RIGHT = 39;
+			$('body').on('keydown', function (ev) {
+				console.debug(4);
+
+				switch (ev.which) {
+					case LEFT:
+						doPrevious();
+						break;
+					case RIGHT:
+						doNext();
+						break;
+				}
+
+			});
+
+		})
+
+		function doPrevious() {
+			console.debug(2);
+			changeImage(-1);
+		}
+		function doNext() {
+			console.debug(3);
+			changeImage(+1);
+		}
+		function changeImageTag(delta) {
+			var imageTag = $('#imageContent img:visible');
+			console.debug('imageTag length ' + imageTag.length);
+			var position = imageTag.data('position');
+			position = position + delta;
+			console.debug('position now is ' + position);
+			imageTag.data('position', position);
+			imageTag.attr('src', 'Image?position=' + position);
+			console.debug('changed imageTag to ' + imageTag.attr('src'));
+		}
+
+		function next() {
+			var imageTags = $('#imageContent img');
+			var current = imageTags.filter('.image-current');
+			var next = imageTags.filter('.image-next');
+			var previous = imageTags.filter('.image-previous');
+
+			next.removeClass('image-next hidden').addClass('image-current');
+			current.removeClass('image-current').addClass('image-previous hidden');
+			previous.removeClass('image-previous').addClass('image-next hidden');
+
+			var temp = previous;
+			previous = current;
+			current = next;
+			next = temp;
+			position = 1 + current.data('position');
+			next
+				.attr('src', 'Image?position=' + position)
+				.data('position', position);
+
+		}
+
+		function changeImage(delta) {
+			var imageTags = $('#imageContent img');
+			var current = imageTags.filter('.current');
+			var currentPosition = current.data('position');
+			var newPosition = delta + currentPosition;
+			var newCurrentEl = imageTags.filter("[data-position='"+newPosition+"']");
+
+			imageTags.removeClass('current').addClass('hidden');
+
+			newCurrentEl.removeClass('hidden').addClass('current');
+
+			var elementToReset;
+			var newPositionForElement;
+			var sortedElements = imageTags.toArray().sort(function (a, b) {
+				a = $(a).data('position');
+				b = $(b).data('position');
+
+				return a - b;
+			}).map(function (el) {
+				return $(el);
+			});
+			if (delta < 0) {
+				//prev
+				elementToReset = sortedElements.pop();
+				newPositionForElement = -1 + sortedElements[0].data('position');
+			} else {
+				//next
+				elementToReset = sortedElements[0];
+				var last = sortedElements.pop();
+				newPositionForElement = 1 + last.data('position');
+			}
+			
+			elementToReset
+				.attr('src', '/Slideshow/Image?position=' + newPositionForElement)
+				.data('position', newPositionForElement)
+				.attr('data-position', newPositionForElement); //hack. data() doesn't change actual attribute so filtering doesn't work
+
+		}
+
+	</script>
+}

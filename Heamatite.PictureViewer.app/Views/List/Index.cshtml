@@ -1,0 +1,37 @@
+﻿@model ListModel
+
+<div class="container">
+	<div class="row">
+		<div class="col-xs-3">
+			<nav>
+				<ul class="nav">
+					@foreach (var folder in Model.Folders)
+					{
+						<li><a href="~/List/Index?currentFolder=@folder.Value">@folder.Key</a></li>
+					}
+					@*<li><a href="#"></a></li>
+					<li>
+						<a href="#" id="btn-1" data-toggle="collapse" data-target="#submenu1" aria-expanded="false"></a>
+						<ul class="nav collapse" id="submenu1" role="menu" aria-labelledby="btn-1">
+							<li><a href="#">a</a></li>
+							<li><a href="#">b</a></li>
+							<li><a href="#">c</a></li>
+						</ul>
+					</li>
+					<li><a href="#">a</a></li>
+					<li><a href="#">b</a></li>*@
+				</ul>
+			</nav>
+		</div>
+		<div class="col-xs-9">
+			@foreach (var file in Model.Images)
+			{
+				<div class="col-md-3">
+					<a asp-action="NextImage" asp-controller="Slideshow" asp-route-fileName="@file">
+						<img src="~/List/thumb/@file" />
+					</a>
+				</div>
+			}
+		</div>
+	</div>
+</div>

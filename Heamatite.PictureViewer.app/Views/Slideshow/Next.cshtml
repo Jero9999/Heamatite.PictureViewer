@@ -21,10 +21,15 @@
 	</div>
 </div>
 
+@section Stylesheets{
+}
+
 @section Scripts{
+
 	<script type="text/javascript">
 		console.debug(0);
 		$(function () {
+			return;
 			console.debug(1);
 			var LEFT = 37;
 			var RIGHT = 39;
@@ -89,7 +94,7 @@
 			var current = imageTags.filter('.current');
 			var currentPosition = current.data('position');
 			var newPosition = delta + currentPosition;
-			var newCurrentEl = imageTags.filter("[data-position='"+newPosition+"']");
+			var newCurrentEl = imageTags.filter("[data-position='" + newPosition + "']");
 
 			imageTags.removeClass('current').addClass('hidden');
 
@@ -115,7 +120,7 @@
 				var last = sortedElements.pop();
 				newPositionForElement = 1 + last.data('position');
 			}
-			
+
 			elementToReset
 				.attr('src', '/Slideshow/Image?position=' + newPositionForElement)
 				.data('position', newPositionForElement)

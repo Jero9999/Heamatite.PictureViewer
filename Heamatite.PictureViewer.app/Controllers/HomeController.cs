@@ -12,7 +12,8 @@ namespace Heamatite.PictureViewer.app.Controllers
 	{
 		public IActionResult Index()
 		{
-			return this.RedirectToAction("Next", "Slideshow", new { position = 1 });
+			return this.RedirectToAction("Index", "List", new { position = 1 });
+			//return this.RedirectToAction("Next", "Slideshow", new { position = 1 });
 		}
 
 		public IActionResult About()

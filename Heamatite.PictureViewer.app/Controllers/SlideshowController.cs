@@ -30,19 +30,20 @@ namespace Heamatite.PictureViewer.app.Controllers
 			return View("NextVirtualSlide", new SlideshowModel
 			{
 				Position = position,
-				CurrentFolder = Encode(currentFolder)
+				CurrentFolder = Encode(currentFolder),
+				NumberOfImages = Directory.GetFiles(currentFolder).Count()
 			});
 		}
 
-		public async Task<IActionResult> Image(int position, string currentFolder = null)
+		public IActionResult Image(int position, string currentFolder = null)
 		{
 			currentFolder = Decode(currentFolder);
 
 			var files = Directory.GetFiles(currentFolder);
 			var numFiles = files.Count();
-			position %= numFiles;
-			position = position < 0 ? numFiles + position : position;
-
+			position = (position + numFiles) % numFiles;
+			//position = position < 0 ? numFiles + position : position;
+			Debug.WriteLine($"********{position}");
 			var fileToShow = files.ElementAt(position);
 
 			var stream = new FileInfo(fileToShow).OpenRead();
@@ -51,14 +52,23 @@ namespace Heamatite.PictureViewer.app.Controllers
 			}
 		}
 
-		public async Task<IActionResult> ImageFile(string fileName)
+		[Route("Image/Shuffle")]
+		public IActionResult ImageShuffle(string currentFolder = null)
 		{
-			fileName = Decode(fileName);
-			var currentFolder = Path.GetDirectoryName(fileName);
-			var justTheFilename = Path.GetFileName(fileName);
+			currentFolder = Decode(currentFolder);
+			var shuffler = new Random();
 			var files = Directory.GetFiles(currentFolder);
-			var position = Array.IndexOf(files, justTheFilename, 0);
-			return this.RedirectToAction("Index", new { position, currentFolder });
+			var numFiles = files.Count();
+
+			var position = shuffler.Next(numFiles);
+			position = position < 0 ? numFiles + position : position;
+
+			var fileToShow = files.ElementAt(position);
+
+			var stream = new FileInfo(fileToShow).OpenRead();
+			{
+				return this.File(stream, "image/jpeg");
+			}
 		}
 
 		private string Encode(string str) => Convert.ToBase64String(Encoding.UTF8.GetBytes(str));

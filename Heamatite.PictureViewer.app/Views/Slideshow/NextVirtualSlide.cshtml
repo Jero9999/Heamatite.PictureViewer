@@ -4,15 +4,9 @@
 	var currentPosition = Model.Position;
 }
 <div>
+	<a id="done" class="btn btn-danger hidden-controls" asp-controller="List" asp-action="Index" asp-route-currentFolder="@Model.CurrentFolder" style="position:relative;z-index:9999;">DONE</a>
 	<div id="slideshowRoot" class="swiper-container">
 		<div class="swiper-wrapper">
-			@*@foreach (var position in imgPositions)
-			{
-				var isCurrent = position == currentPosition ? "current" : "hidden";
-				<div class="swiper-slide">
-					<img src="~/Slideshow/Image?position=@position" class="" data-position="@position" style="max-width:100%;max-height:100%;" />
-				</div>
-			}*@
 		</div>
 	</div>
 </div>
@@ -36,9 +30,9 @@
 		}
 
 		.swiper-container {
-			position:absolute;
-			top:0px;
-			bottom:0px;
+			position: absolute;
+			top: 0px;
+			bottom: 0px;
 			width: 100%;
 			height: 100%;
 		}
@@ -68,30 +62,57 @@
 	<script type="text/javascript" src="~/local_lib/swiper-4.0.7/dist/js/swiper.min.js"></script>
 	<script type="text/javascript">
 		$(function () {
-			var currentFolder= '@Model.CurrentFolder';
+			var currentFolder = '@Model.CurrentFolder';
+			var numberOfImages = @Model.NumberOfImages;
+			//var numberOfImages = 5;
+
 			var swiper = new Swiper('.swiper-container',
 				{
+					init: false,
+					initialSlide: 1,
 					virtual: {
+						cache: false,
+						slides: [numberOfImages -1,0,1],
 						renderSlide: function (slide, index) {
+							console.debug('***just rendered slide number ' + slide);
 							return '<div class="swiper-slide">' +
 						'<img src="Image?position='+slide+'&currentFolder='+currentFolder+'" style="max-width:100%;max-height:100%;" />' +
 						'</div>'
-
-						}
+						},
 					}
 				});
+
+		
+
+			swiper.init();
+
+			//reachEnd needs to be attached *after* init is called otherwise init will call it
 			swiper.on('reachEnd', function () {
-				var lastIndex = swiper.virtual.slides[swiper.virtual.slides.length - 1];
-				swiper.virtual.appendSlide(lastIndex + 1);
+				setTimeout(function () {
+					var lastIndex = swiper.virtual.slides[swiper.virtual.slides.length - 1];
+					var newSlideNumber = (lastIndex + 1) % numberOfImages;
+					swiper.virtual.appendSlide(newSlideNumber);
+					swiper.virtual.update();
+					console.debug('>>>just prepended slide number ' + newSlideNumber);
+				});
 			});
+			//reachBeginning needs to be attached *after* init is called otherwise init will call it
 			swiper.on('reachBeginning', function () {
-				var firstIndex = swiper.virtual.slides[0];
-				swiper.virtual.prependSlide(firstIndex - 1);
+				setTimeout(function () {
+					var firstIndex = swiper.virtual.slides[0];
+					var newSlideNumber = (firstIndex - 1 + numberOfImages) % numberOfImages
+					swiper.virtual.prependSlide(newSlideNumber);
+					swiper.virtual.update();
+					console.debug('<<<just appended slide number ' + newSlideNumber);
+				});
 			});
-				
-			for (var i = 0; i < 10; i++) {
-				swiper.virtual.appendSlide(i);
-			}
+
+
+			$('.hidden-controls').hide();
+			$('body').on('click', function () {
+				$('.hidden-controls').toggle();
+
+			});
 
 		})
 	</script>

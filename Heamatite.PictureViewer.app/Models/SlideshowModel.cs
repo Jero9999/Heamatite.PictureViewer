@@ -6,5 +6,6 @@ namespace Heamatite.PictureViewer.app.Models
 	{
 		public int Position { get; internal set; }
 		public string CurrentFolder { get; internal set; }
+		public int NumberOfImages { get; internal set; }
 	}
 }

@@ -2,5 +2,4 @@
 obj
 bin
 /.vs
-/Heamatite.PictureViewer/wwwroot/lib
-/Heamatite.PictureViewer.app/wwwroot/lib
+**/node_modules

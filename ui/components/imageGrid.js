@@ -11,11 +11,12 @@ class ImageGrid extends LitElement {
     .image {
       width: 100%;
       height: auto;
+			max-width: 100px;
     }
   `;
 
   static properties = {
-    images: { type },
+		images: { type: Array },
   };
 
   constructor() {

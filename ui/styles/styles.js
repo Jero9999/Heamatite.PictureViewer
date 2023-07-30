@@ -6,7 +6,7 @@ export const styles = [
       display: flex;
       align-items: center;
       justify-content: center;
-      --size: 50vw;
+      --size: 25vw;
       width: calc(var(--size) + 80px);
       gap: 8px;
       border-radius: 8px;
@@ -21,7 +21,7 @@ export const styles = [
       border-radius: 8px;
       border: 1px solid #002071;
       height: var(--size);
-      min-width: var(--size);
+      width: var(--size);
       padding: 8px;
       will-change: transform;
       display: flex;
